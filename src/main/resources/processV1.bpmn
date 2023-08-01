@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_02kqo1r" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.12.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.2.0">
+  <bpmn:process id="immatriculation" name="RegistrationRequest" isExecutable="true">
+    <bpmn:extensionElements>
+      <zeebe:userTaskForm id="userTaskForm_3b9edb7">{
+  "components": [
+    {
+      "label": "unique id",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_01981q1",
+        "columns": null
+      },
+      "id": "Field_0ojcato",
+      "key": "uid",
+      "readonly": false,
+      "disabled": false,
+      "validate": {
+        "required": true
+      }
+    }
+  ],
+  "type": "default",
+  "id": "Form_uid",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.2.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.12.1"
+  },
+  "schemaVersion": 9
+}</zeebe:userTaskForm>
+      <zeebe:userTaskForm id="userTaskForm_19hh1n4">{
+  "components": [
+    {
+      "label": "country_name",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1qyn5fv",
+        "columns": null
+      },
+      "id": "Field_1k1hf8j",
+      "key": "country_name",
+      "disabled": false,
+      "readonly": true
+    },
+    {
+      "label": "phone_number",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_1goq2zh",
+        "columns": null
+      },
+      "id": "Field_0wam2uh",
+      "key": "phone_number",
+      "disabled": false,
+      "readonly": true
+    },
+    {
+      "label": "carrier",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_09jg5su",
+        "columns": null
+      },
+      "id": "Field_16z2pyg",
+      "key": "carrier",
+      "disabled": false,
+      "readonly": true
+    },
+    {
+      "label": "activity_score",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_0kybwr2",
+        "columns": null
+      },
+      "id": "Field_1crr4y7",
+      "key": "activity_score",
+      "disabled": false,
+      "readonly": true
+    }
+  ],
+  "type": "default",
+  "id": "Form_16msqen",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.2.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.12.1"
+  },
+  "schemaVersion": 9
+}</zeebe:userTaskForm>
+    </bpmn:extensionElements>
+    <bpmn:startEvent id="Event_0mwnh0c" name="want to make registration request">
+      <bpmn:outgoing>Flow_11ioz7h</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_11ioz7h" sourceRef="Event_0mwnh0c" targetRef="Gateway_0080c5e" />
+    <bpmn:sequenceFlow id="Flow_1yvokul" sourceRef="Activity_0" targetRef="Activity_1" />
+    <bpmn:exclusiveGateway id="Gateway_1lyd7cv">
+      <bpmn:incoming>Flow_0ax2axx</bpmn:incoming>
+      <bpmn:outgoing>Flow_0l90ihm</bpmn:outgoing>
+      <bpmn:outgoing>Flow_060rsqj</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0ax2axx" sourceRef="Activity_1" targetRef="Gateway_1lyd7cv" />
+    <bpmn:serviceTask id="Activity_1" name="check uid">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="checkuid" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1yvokul</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ax2axx</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="Activity_0" name="provide uid">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formKey="camunda-forms:bpmn:userTaskForm_3b9edb7" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1sdo5ko</bpmn:incoming>
+      <bpmn:outgoing>Flow_1yvokul</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0l90ihm" name="non valid" sourceRef="Gateway_1lyd7cv" targetRef="Gateway_0080c5e">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=is_valid=false</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_060rsqj" name="valid" sourceRef="Gateway_1lyd7cv" targetRef="Activity_143rtf5">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=is_valid=true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_11dau2l" sourceRef="Activity_143rtf5" targetRef="Activity_1juc1yw" />
+    <bpmn:userTask id="Activity_1juc1yw" name="fill in basic infos">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formKey="embedded:app:/forms/form2.html" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_11dau2l</bpmn:incoming>
+      <bpmn:outgoing>Flow_1l4frrx</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_1l4frrx" sourceRef="Activity_1juc1yw" targetRef="Event_0ae7h44" />
+    <bpmn:endEvent id="Event_0ae7h44" name="end process">
+      <bpmn:incoming>Flow_1l4frrx</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="Activity_143rtf5" name="create registration request">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formKey="camunda-forms:bpmn:userTaskForm_19hh1n4" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_060rsqj</bpmn:incoming>
+      <bpmn:outgoing>Flow_11dau2l</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_0080c5e">
+      <bpmn:incoming>Flow_11ioz7h</bpmn:incoming>
+      <bpmn:incoming>Flow_0l90ihm</bpmn:incoming>
+      <bpmn:outgoing>Flow_1sdo5ko</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1sdo5ko" sourceRef="Gateway_0080c5e" targetRef="Activity_0" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="immatriculation">
+      <bpmndi:BPMNShape id="Event_0mwnh0c_di" bpmnElement="Event_0mwnh0c">
+        <dc:Bounds x="172" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="158" y="145" width="65" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1lyd7cv_di" bpmnElement="Gateway_1lyd7cv" isMarkerVisible="true">
+        <dc:Bounds x="655" y="95" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0zmjz2p_di" bpmnElement="Activity_1">
+        <dc:Bounds x="490" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1j5eim5_di" bpmnElement="Activity_0">
+        <dc:Bounds x="360" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0faazir_di" bpmnElement="Activity_1juc1yw">
+        <dc:Bounds x="920" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0ae7h44_di" bpmnElement="Event_0ae7h44">
+        <dc:Bounds x="1082" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1070" y="145" width="61" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_18r7tkv_di" bpmnElement="Activity_143rtf5">
+        <dc:Bounds x="780" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0080c5e_di" bpmnElement="Gateway_0080c5e" isMarkerVisible="true">
+        <dc:Bounds x="245" y="95" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_11ioz7h_di" bpmnElement="Flow_11ioz7h">
+        <di:waypoint x="208" y="120" />
+        <di:waypoint x="245" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1yvokul_di" bpmnElement="Flow_1yvokul">
+        <di:waypoint x="460" y="120" />
+        <di:waypoint x="490" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ax2axx_di" bpmnElement="Flow_0ax2axx">
+        <di:waypoint x="590" y="120" />
+        <di:waypoint x="655" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0l90ihm_di" bpmnElement="Flow_0l90ihm">
+        <di:waypoint x="680" y="145" />
+        <di:waypoint x="680" y="230" />
+        <di:waypoint x="270" y="230" />
+        <di:waypoint x="270" y="150" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="612" y="203" width="45" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_060rsqj_di" bpmnElement="Flow_060rsqj">
+        <di:waypoint x="705" y="120" />
+        <di:waypoint x="780" y="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="709" y="103" width="22" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_11dau2l_di" bpmnElement="Flow_11dau2l">
+        <di:waypoint x="880" y="120" />
+        <di:waypoint x="920" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1l4frrx_di" bpmnElement="Flow_1l4frrx">
+        <di:waypoint x="1020" y="120" />
+        <di:waypoint x="1082" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1sdo5ko_di" bpmnElement="Flow_1sdo5ko">
+        <di:waypoint x="295" y="120" />
+        <di:waypoint x="360" y="120" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

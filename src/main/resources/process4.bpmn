@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_02kqo1r" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.12.1" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.2.0">
+  <bpmn:process id="Process_4" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" name="want to make registration request">
+      <bpmn:outgoing>Flow_1ijvfai</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1ijvfai" sourceRef="StartEvent_1" targetRef="Activity_1wx5as8" />
+    <bpmn:sequenceFlow id="Flow_1rcysws" sourceRef="Activity_1wx5as8" targetRef="Activity_1514eom" />
+    <bpmn:sequenceFlow id="Flow_1p1ze99" sourceRef="Activity_1514eom" targetRef="Activity_062hon0" />
+    <bpmn:sequenceFlow id="Flow_0exndcb" sourceRef="Activity_062hon0" targetRef="Activity_03mr98w" />
+    <bpmn:sequenceFlow id="Flow_0b87kno" sourceRef="Activity_03mr98w" targetRef="Activity_0" />
+    <bpmn:endEvent id="Event_19a561r">
+      <bpmn:incoming>Flow_1ujpu9g</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1ujpu9g" sourceRef="Activity_0" targetRef="Event_19a561r" />
+    <bpmn:userTask id="Activity_1wx5as8" name="provide your uid">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formKey="camunda-forms:/forms/registrationRequest.form" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1ijvfai</bpmn:incoming>
+      <bpmn:outgoing>Flow_1rcysws</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Activity_1514eom" name="fill in basic infos">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formKey="camunda-forms:/forms/basicInfo.form" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1rcysws</bpmn:incoming>
+      <bpmn:outgoing>Flow_1p1ze99</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Activity_062hon0" name="specify acitvity">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formKey="camunda-forms:/forms/activity.form" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1p1ze99</bpmn:incoming>
+      <bpmn:outgoing>Flow_0exndcb</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Activity_03mr98w" name="provide docs">
+      <bpmn:incoming>Flow_0exndcb</bpmn:incoming>
+      <bpmn:outgoing>Flow_0b87kno</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Activity_0" name="verify">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formKey="camunda-forms:/forms/registrationRequest.form" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0b87kno</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ujpu9g</bpmn:outgoing>
+    </bpmn:userTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_4">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="165" y="142" width="65" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_19a561r_di" bpmnElement="Event_19a561r">
+        <dc:Bounds x="1042" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1ok77nu_di" bpmnElement="Activity_1wx5as8">
+        <dc:Bounds x="290" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_06baw9z_di" bpmnElement="Activity_1514eom">
+        <dc:Bounds x="440" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1lg5j6u_di" bpmnElement="Activity_062hon0">
+        <dc:Bounds x="590" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1gajy4m_di" bpmnElement="Activity_03mr98w">
+        <dc:Bounds x="740" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0mc5esf_di" bpmnElement="Activity_0">
+        <dc:Bounds x="890" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1ijvfai_di" bpmnElement="Flow_1ijvfai">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="290" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1rcysws_di" bpmnElement="Flow_1rcysws">
+        <di:waypoint x="390" y="117" />
+        <di:waypoint x="440" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1p1ze99_di" bpmnElement="Flow_1p1ze99">
+        <di:waypoint x="540" y="117" />
+        <di:waypoint x="590" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0exndcb_di" bpmnElement="Flow_0exndcb">
+        <di:waypoint x="690" y="117" />
+        <di:waypoint x="740" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0b87kno_di" bpmnElement="Flow_0b87kno">
+        <di:waypoint x="840" y="117" />
+        <di:waypoint x="890" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ujpu9g_di" bpmnElement="Flow_1ujpu9g">
+        <di:waypoint x="990" y="117" />
+        <di:waypoint x="1042" y="117" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
