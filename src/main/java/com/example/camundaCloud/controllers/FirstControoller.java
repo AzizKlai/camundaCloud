@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.camundaCloud.global.Global;
+
 import io.camunda.zeebe.client.ZeebeClient;
 //import org.camunda.bpm.engine.RuntimeService;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
@@ -39,13 +41,37 @@ public class FirstControoller {
        private final static Logger LOG = LoggerFactory.getLogger(FirstControoller.class);
 
    
-    @PostMapping("/start")
-    public  ResponseEntity<String> startProcess() {
+@PostMapping("/process/complete-task/{processInstancekey}")
+  public ResponseEntity<String> completeTask(@PathVariable String processInstancekey,
+                                            @RequestBody Map<String, Object> taskVariables)
+   {try{
+       // getting taskinstacekey
+       //todo remember to handle error in case of non process existance
+       Long taskInstancekey=Global.currentJobs.get(processInstancekey).getKey();
+       CompleteJobResponse response = client.newCompleteCommand(taskInstancekey)
+        .variables(taskVariables).send()
+                .join();
+        String res="Task completed. Workflow instance key: " + response.toString();
+        System.out.println(res);
+        return ResponseEntity.ok(res); 
+   
+
+
+    }
+      catch (Exception e){
+        return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body("Failed to complete task: " + e.getMessage());
+    
+      }
+
+
+   }
+    @PostMapping("/process/start/{bpmnPnstanceId}")
+    public  ResponseEntity<String> startProcess(@PathVariable String bpmnPnstanceId) {
         // TODO Auto-generated method stub
         try{
         final ProcessInstanceEvent event=
         client.newCreateInstanceCommand()
-        .bpmnProcessId("immatriculation")
+        .bpmnProcessId(bpmnPnstanceId)
         .latestVersion()
         .send()
         .join();
@@ -63,8 +89,8 @@ public class FirstControoller {
       }
 
 
-       @GetMapping("/{processInstanceId}/get-task")// /{taskId}")
-  public ResponseEntity<String> completeTask(@PathVariable String processInstanceId// @PathVariable String taskId,
+       @GetMapping("/process/{processInstanceKey}/get-task")// /{taskId}")
+  public ResponseEntity<String> completeTask(@PathVariable String processInstanceKey// @PathVariable String taskId,
      )
      {
    try{
@@ -72,20 +98,14 @@ public class FirstControoller {
 
        // long taskInstanceKey = /* Provide the task instance key here */;
        //List<ActivatedJobEvent> activatedJobs = 
-       
-       ActivatedJob job =client.newActivateJobsCommand()
-       .jobType("io.camunda.zeebe:userTask")
-       .maxJobsToActivate(1)
-       .send()
-       .join()
-        .getJobs()
-        .get(0);
-
+         
+//getting current task by processinstancekey
+//todo remember to handle error
+String task=Global.currentJobs.get(processInstanceKey).toString();
 // Check if the job (task) is available for processing
 String res;
-if (job != null) {
-    long taskInstanceKey = job.getKey();
-    res="Task Instance Key: " + taskInstanceKey;
+if (task != null) {
+    res="Task Instance : " + task;
     
 } else {
     res="No tasks available.";
@@ -104,27 +124,6 @@ if (job != null) {
     
       }
 }  
-@PostMapping("/{taskInstanceKey}/complete-task/")
-  public ResponseEntity<String> completeTask(@PathVariable String taskInstancekey,
-                                            @RequestBody Map<String, Object> taskVariables)
-   {try{
-       CompleteJobResponse response = client.newCompleteCommand(Long.parseLong(taskInstancekey))
-        .variables(taskVariables).send()
-                .join();
-        String res="Task completed. Workflow instance key: " + response.toString();
-        System.out.println(res);
-        return ResponseEntity.ok(res); 
-   
-
-
-    }
-      catch (Exception e){
-        return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body("Failed to complete task: " + e.getMessage());
-    
-      }
-
-
-   }
 
 
 

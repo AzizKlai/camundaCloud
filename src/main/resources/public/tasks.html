@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src='./assets/scripts/config.js'></script>
+  <link rel='stylesheet' href='./assets/styles/bootstrap.min.css'>
+  <script src="./assets/scripts/jquery-2.x-git.min.js"></script>
+  <script src="./assets/scripts/bootstrap.min.js"></script>
+  <link rel='stylesheet' href="https://cdn.form.io/formiojs/formio.full.min.css">
+  <script src="https://cdn.form.io/formiojs/formio.full.min.js"></script>
+
+  <link rel='stylesheet' href='./assets/styles/task-form.css'>
+  <script src='./assets/scripts/form_management.js'></script>
+  <script src='./assets/scripts/form_management_ext.js'></script>
+
+  <script type='text/javascript'>
+    const urlParams = new URLSearchParams(window.location.search);
+    // form data
+    var data;
+   
+   
+   // Get individual parameter values
+  
+    const taskId = urlParams.get("taskid");
+     // set the activity to param activity name
+    var currtaskId="";
+    // "value1"
+    function show_msg(title, msg) {
+      $("#MSG .modal-header h4").html(title);
+      $("#MSG .modal-body p").html(msg);
+      $("#MSG").modal();
+    };
+   /// 555 is procesinstaceid for testing
+    fetch("http://localhost:8999/process/555/get-task")
+    .then(response=> response.text( ))
+    .then(data => {
+                // Process the JSON data received from the Spring Boot controller
+                // In this example, we'll simply display it in the 'result' div
+                console.log(data)
+                currtaskId = data;
+                
+                if (taskId==undefined || taskId != currtaskId) {
+
+
+alert(taskId+"  here  "+currtaskId+"No TaskId defined  You are probably trying to run this form without an HTTP server. This won't work");
+
+} else {
+    
+    window.onload = function() {
+
+      //apiEndpoint
+     // Formio.createForm(docume  nt.getElementById('formio'), "https://chafpdbkzbnktba.form.io/testform", {noAlerts:true})
+     Formio.createForm(
+          document.getElementById("formio"),
+          "https://qxpxjzjdylejnlm.form.io/test"
+        ).then((form)=>{
+          form.on('change', (changed,submission) => {
+             // console.log('Data was changed!', changed);
+              data=changed.data;    
+          });
+          form.on('submitDone', function(submission) {
+            console.log("aziz",submission.data);
+            handlesubmit(submission.data)
+
+            });
+            //here we get submit button by Name made by formio cause the form.on("submitDone") won't work
+            
+            async function handlesubmit(submission) {
+            console.log(data);
+
+                 try {
+                  
+               
+                // the endpoint url the 55555 is just for test it is a jobtaskkey 
+
+                // Do something with the form data (e.g., process it or post it to the endpoint)
+                // For example, you can post it back to the endpoint using the Fetch API
+                const response = await fetch("http://localhost:8999/process/complete-task/55555", {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(submission)
+                })
+                  .then(response => response.text)
+                  .then(result => {
+                    // Handle the response if needed
+                    console.log('Form submission response:', result);
+
+                    // Wait for 5 seconds before closing the window
+                    return new Promise(resolve => setTimeout(resolve, 50000));
+                  })
+                  .then(() => {
+                    // After the delay, close the window
+                    window.close();
+                  })
+                } catch (error) {
+                  console.log('Error handling form submission:', error);
+                }    
+                        
+
+            
+            };
+            document.getElementsByName('data[submit]')[0].addEventListener('click',function(){});
+
+
+            
+            
+            
+
+        }); 
+   
+        
+
+     }}
+       
+
+
+            })
+            .catch(error => {
+                // Handle any errors that occurred during the fetch
+                console.log('Error fetching data:', error);
+            });
+            
+ /*
+        form.onsubmit=function(submission) {
+    // Submit the form data to the API endpoint
+    fetch(apiEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(submission.data),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // Handle the response data if needed
+        console.log('API Response:', data);
+      })
+      .catch((error) => {
+        // Handle errors if any
+        console.error('Error:', error.message);
+      });
+  };
+*/
+/*
+      const current_url = new URL(window.location.href);
+      const origin_url = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
+
+      const taskId = getParameterByName('taskId', current_url);
+      const callbackUrl = getParameterByName('callbackUrl', current_url);
+
+      const camunda_rest_url = new URL(configuration["camundaBaseURL"], origin_url);
+
+      if (taskId == undefined) {
+        show_msg("No TaskId defined", "You are probably trying to run this form without an HTTP server. This won't work");
+      } else {
+
+        var fetch_task_info = getTaskInfo(taskId, camunda_rest_url);
+
+        fetch_task_info
+          .catch(function(error) {
+            show_msg("Server is not available",
+              "Cannot initialize Form. Please try again or wait until server is up and running. " + error);
+          })
+          .then(function(ti) {
+              var task_info = ti;
+              let fetch_process_vars = getProcessVariables(task_info["processInstanceId"], camunda_rest_url);
+              fetch_process_vars
+                .catch(function(error) {
+                  show_msg("Server is not available", "Cannot retrieve process variables. " + error);
+                })
+                .then(function(pvs) {
+                    var process_vars = pvs;
+                    let fetch_task_vars = getTaskVariables(taskId, camunda_rest_url);
+                    fetch_task_vars.catch(function(error) {
+                        show_msg("Server is not available", "Cannot retrieve task variables. " + error);
+                      })
+                      .then(function(tvs) {
+                          var task_vars = tvs;
+
+                          if ("formio_options" in task_vars) {
+                            let form_json_url = task_vars["formio_options"].value.json;
+
+                              $.getJSON(getFormURL(form_json_url), function(jsonForm, status) {
+                                  if (status === "success") {
+                                    // Interpolate JSON variables for headers and API urls. ES6 feature needs polyfill
+                                    var jsonFormInterpolated = JSON.parse(JSON.stringify(jsonForm));
+                                    // Create form
+                                    Formio.setBaseUrl(origin_url);
+                                    Formio.createForm(document.getElementById('formio'), jsonFormInterpolated, {noAlerts:true})
+                                      .then(function(form) {
+                                        form.url = origin_url;
+                                        form.loading = true;
+
+
+                                        if (task_vars["formio_options"].value.load_submission in process_vars) {
+						var override;
+	                                        if ("formio_override" in task_vars) {
+        	                                  override = getFormInjection(task_vars["formio_override"].value,
+                	                            FormioUtils.flattenComponents(form.component.components));
+                                	        };
+
+                                          var submission = process_vars[task_vars["formio_options"].value.load_submission].value;
+                                          $.extend(true, form.submission, submission, override);
+                                        };
+
+
+                                        let tv = task_vars["formio_options"].value.json;
+                                        form.loading = false;
+
+                                        form.on('change', (event) =>
+                                          formio_on_change(event, tv, form));
+
+
+                                        form.on('error', (errors) => {
+                                          try {
+                                               var msg = "<li>"+errors.map(x=>(x.message)).join("<li>");
+                                          } catch (e) {
+                                               var msg = "<li>"+errors.message;
+                                          };
+                                          show_msg("Please remediate before submitting", msg);
+                                          form.loading = false;
+                                        });
+
+                                        form.on('submit', (submission) => {
+                                          form.loading = true;
+
+                                          var on_submit = formio_on_submit(submission, task_vars["formio_options"].value.json);
+                                          if (on_submit) {
+                                            form.loading = true;
+                                            // form.setAlert(on_submit);
+                                          } else {
+                                            form.loading = true;
+                                            let submitTF = submitTaskForm(taskId, task_vars["formio_options"].value.save_submission,
+                                                                          submission, camunda_rest_url, "complete");
+                                            submitTF.then(function(response) { window.location.href = callbackUrl
+                                            }).catch(function(error) {
+                                                  show_msg("Server error", error.message);
+                                                  form.loading = false;
+                                                });
+                                            };
+                                        });
+                                      })
+                                  // GetJSON failed
+                                  } else {
+                                    show_msg("Formio error", "Not able to load Formio definition in JSON format");
+                                  }
+                              });
+                            } else {
+                              show_msg("Incorrect task configuration", "Formio options are not correctly defined in a BPMN file");
+                            }
+                          });
+                      });
+                });
+          };*/
+    
+  </script>
+</head>
+
+<body>
+
+ <nav class="navbar navbar-custom navbar-fixed-top" style="background-color: #ff8200;">
+   <div class="container-fluid">
+     <div id="particles-js"></div>
+     <div class="navbar-header">
+     </div>
+     <div class="collapse navbar-collapse">
+       <ul class="nav navbar-nav">
+         <li class="active">
+             <h2 face="Arial" size="5" color="#FFFFFF" class="activity" >Activity_1</h2>
+             <script>
+              //set taskid
+             document.getElementsByClassName('activity')[0].innerHTML = taskId;</script>
+         </li>
+       </ul>
+       <ul class="nav navbar-nav navbar-right">
+       <li class="dropdown">
+         <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-home"></span>&nbsp;<b class="caret"></b></a>
+         <ul class="dropdown-menu">
+           <li><a href="http://localhost:8082">Tasklist</a></li>
+           <li><a href="http://localhost:8081">operate</a></li>
+           <li class="divider"></li>
+          
+         </ul>
+       </ul>
+     </div>
+  </div>
+ </nav>
+
+  <div class="container-fluid">
+    <!-- Modal -->
+    <div class="modal fade" id="MSG" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content panel-danger">
+          <div class="modal-header panel-heading">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title"></h4>
+            <!-- Message text -->
+          </div>
+          <div class="modal-body panel-danger">
+            <p></p>
+            <!-- Message text -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <form id="formio" role="form" onsubmit="console.log(submit)">
+
+     
+    </form>
+   
+  </div>
+</body>
+</html>
