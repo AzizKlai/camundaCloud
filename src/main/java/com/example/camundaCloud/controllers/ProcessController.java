@@ -9,10 +9,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,7 +29,9 @@ import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.worker.JobClient;
 import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
-@RestController("/process")
+@RestController()
+@RequestMapping("/process")
+@CrossOrigin("*")
 public class ProcessController {
   @Autowired
   ProcessService processService;
@@ -35,9 +39,9 @@ public class ProcessController {
   
    
    
-   @GetMapping
+   @GetMapping("")
    public String onBord(){
-    client.newActivateJobsCommand().jobType("Test");
+    //client.newActivateJobsCommand().jobType("Test");
     return "success";
    }
 
@@ -47,18 +51,18 @@ public class ProcessController {
        private final static Logger LOG = LoggerFactory.getLogger(ProcessController.class);
 
    
-  @PostMapping("/process/complete-task/{processInstancekey}")
+  @PostMapping("/complete-task/{processInstancekey}")
   public ResponseEntity<Object> completeTask(@PathVariable String processInstancekey,
                                             @RequestBody Map<String, Object> taskVariables)
    { return this.processService.completeTask(processInstancekey, taskVariables);
    }
-    @PostMapping("/process/start/{bpmnPnstanceId}")
+    @PostMapping("/start/{bpmnPnstanceId}")
     public  ResponseEntity<Object> startProcess(@PathVariable String bpmnPnstanceId) {
        return this.processService.startProcess(bpmnPnstanceId);
       }
 
 
-   @GetMapping("/process/{processInstanceKey}/get-task")
+   @GetMapping("/{processInstanceKey}/get-task")
    public ResponseEntity<Object> getTask(@PathVariable String processInstanceKey)
      {
        return this.processService.getTask(processInstanceKey);
