@@ -10,6 +10,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.example.camundaCloud.Application;
 import com.example.camundaCloud.global.Global;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -108,7 +109,8 @@ public class Worker {
         
         Map variables = job.getVariablesAsMap();
         // every time a usertask accure we save the job by the processinstancekey
-        Global.currentJobs.put(job.getElementInstanceKey()+"",job);      
+        Global.putJobs(job.getProcessInstanceKey()+"",job);   
+        System.out.println("\n \n");
                
         System.out.println(job.toString()+ "job.getVariables()"+variables+" ****job handling ***"+job.getElementId());
         // get variables

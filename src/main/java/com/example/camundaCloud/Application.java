@@ -14,6 +14,7 @@ import com.example.camundaCloud.global.Global;
 
 import io.camunda.operate.dto.ProcessInstance;
 import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.spring.client.annotation.Deployment;
 
@@ -21,13 +22,13 @@ import io.camunda.zeebe.spring.client.annotation.Deployment;
 @SpringBootApplication
 @Deployment(resources = {"classpath:test.bpmn","classpath:processV3.bpmn","classpath:processV1.bpmn","classpath:processV2.bpmn" , "classpath:process4.bpmn", "classpath:service.bpmn"})
 public class Application  {
+       
     public static void main(String... args){
           String filepath="process4.bpmn";
           File inputFile=new File(filepath);
           
           // initiate the global map to a new one
-          Global.currentJobs=new HashMap<>();
-
+          
 
            SpringApplication.run(Application.class, args);
     }
