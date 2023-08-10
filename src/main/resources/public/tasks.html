@@ -36,15 +36,15 @@
       $("#MSG").modal();
     };
    /// 555 is procesinstaceid for testing
-    fetch("http://localhost:8999/process/555/get-task")
-    .then(response=> response.text( ))
+    fetch("http://localhost:8999/process/2251799813741573/get-task")
+    .then(response=> response.json( ))
     .then(data => {
                 // Process the JSON data received from the Spring Boot controller
                 // In this example, we'll simply display it in the 'result' div
                 console.log(data)
-                currtaskId = data;
+                currtaskId = data.task.toString();
                 
-                if (taskId==undefined || taskId != currtaskId) {
+                if (false) {
 
 
 alert(taskId+"  here  "+currtaskId+"No TaskId defined  You are probably trying to run this form without an HTTP server. This won't work");
@@ -80,7 +80,7 @@ alert(taskId+"  here  "+currtaskId+"No TaskId defined  You are probably trying t
 
                 // Do something with the form data (e.g., process it or post it to the endpoint)
                 // For example, you can post it back to the endpoint using the Fetch API
-                const response = await fetch("http://localhost:8999/process/complete-task/55555", {
+                const response = await fetch("http://localhost:8999/process/complete-task/2251799813743720", {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json'
@@ -93,7 +93,7 @@ alert(taskId+"  here  "+currtaskId+"No TaskId defined  You are probably trying t
                     console.log('Form submission response:', result);
 
                     // Wait for 5 seconds before closing the window
-                    return new Promise(resolve => setTimeout(resolve, 50000));
+                    return new Promise(resolve => setTimeout(resolve, 5000));
                   })
                   .then(() => {
                     // After the delay, close the window

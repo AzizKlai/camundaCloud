@@ -15,19 +15,39 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.example.camundaCloud.controllers.ProcessController;
 import com.example.camundaCloud.global.Global;
 
+import io.camunda.operate.CamundaOperateClient;
+import io.camunda.operate.auth.SimpleAuthentication;
+import io.camunda.operate.dto.ProcessInstanceState;
+import io.camunda.operate.exception.OperateException;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.response.CompleteJobResponse;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
+import io.camunda.zeebe.client.api.response.CancelProcessInstanceResponse;
 
 @Service
 public class ProcessService {
     
      @Autowired
      private ZeebeClient client;
+     
+     private CamundaOperateClient operateClient;
+     public ProcessService() throws OperateException{
+        SimpleAuthentication sa = new SimpleAuthentication("demo", "demo", "http://localhost:8081");
+        this.operateClient= new CamundaOperateClient.Builder().operateUrl("http://localhost:8081").authentication(sa).build();
+        
+     }
      private final static Logger LOG = LoggerFactory.getLogger(ProcessService.class);
      
-     
+
+     public String getProcessState(String processInstanceKey) throws NumberFormatException, OperateException{
+        try{
+     return this.operateClient.getProcessInstance(Long.parseLong(processInstanceKey)).getState().toString();
+        }
+        catch(Exception e){ return "doesn't exist";}
+    }
+
+
      public ResponseEntity<Object> startProcess(String bpmnPnstanceId) {
         // TODO Auto-generated method stub
         try{
@@ -52,18 +72,21 @@ public class ProcessService {
        }
      
       }
+
+
      public ResponseEntity<Object> getTask(String processInstanceKey)
-     {
+     {  
+        //operateClient.searchProcessInstances()
         try{ 
             Map<String,Object> res =new HashMap<String , Object>();
+            res.put("processInstanceState",this.getProcessState(processInstanceKey));
             HashMap<String,ActivatedJob> jobs=Global.getCurrentJobs();
             // get the formkey from the job 
             ActivatedJob instanceTask=jobs.get(processInstanceKey);
-
             //.get(processInstanceKey).toString();
             // Check if the job (task) is available for processing
             if (jobs != null && instanceTask!=null) {
-                res.put("FormId",instanceTask.getCustomHeaders().get("io.camunda.zeebe:formKey"));
+                res.put("formId",instanceTask.getCustomHeaders().get("io.camunda.zeebe:formKey"));
                 res.put("task",instanceTask.getElementId());
                 
             } else {
@@ -78,10 +101,13 @@ public class ProcessService {
                 
                 }
             }  
+
+
      public ResponseEntity<Object> completeTask(@PathVariable String processInstanceKey,
                                             @RequestBody Map<String, Object> taskVariables)
      { try{
        Map<String,Object> res =new HashMap<String , Object>();
+
        // getting taskinstacekey
        //todo remember to handle error in case of non process existance
        HashMap<String,ActivatedJob> jobs=Global.getCurrentJobs();
@@ -93,7 +119,10 @@ public class ProcessService {
        CompleteJobResponse response = client.newCompleteCommand(instanceTask.getKey())
         .variables(taskVariables).send()
                 .join();
+
         res.put("status","completed");
+        res.put("processInstanceState",this.getProcessState(processInstanceKey));
+
         //res="Task completed. Workflow instance key: " + response.toString();
         
             }
@@ -115,4 +144,16 @@ public class ProcessService {
 
 
    }
+
+   //todo handle non process existance
+    public ResponseEntity<Object> cancelProcess(String processInstanceKey) throws NumberFormatException, OperateException {
+        Map<String,Object> res =new HashMap<String , Object>();
+       //cancel process instance by key
+       CancelProcessInstanceResponse response = client.newCancelInstanceCommand(Long.parseLong(processInstanceKey))
+                                                .send().join();
+       res.put("state","canceled");
+       res.put("processInstanceState",this.getProcessState(processInstanceKey));                                         
+       return  ResponseEntity.ok(res);                                       
+
+    }
 }

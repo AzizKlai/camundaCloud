@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_02kqo1r" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.13.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.2.0">
-  <bpmn:process id="Process_4" isExecutable="true">
+  <bpmn:process id="process_request" isExecutable="true">
     <bpmn:startEvent id="StartEvent_1" name="want to make registration request">
       <bpmn:outgoing>Flow_1ijvfai</bpmn:outgoing>
     </bpmn:startEvent>
@@ -15,21 +15,21 @@
     <bpmn:sequenceFlow id="Flow_1ujpu9g" sourceRef="Activity_0" targetRef="Event_19a561r" />
     <bpmn:userTask id="Activity_1wx5as8" name="provide your uid">
       <bpmn:extensionElements>
-        <zeebe:formDefinition formKey="https://chafpdbkzbnktba.form.io/testform" />
+        <zeebe:formDefinition formKey="64b535c5861d5f6800a106bb" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1ijvfai</bpmn:incoming>
       <bpmn:outgoing>Flow_1rcysws</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:userTask id="Activity_1514eom" name="fill in basic infos">
       <bpmn:extensionElements>
-        <zeebe:formDefinition formKey="camunda-forms:/forms/basicInfo.form" />
+        <zeebe:formDefinition formKey="64b90fca9061768e84b85457" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1rcysws</bpmn:incoming>
       <bpmn:outgoing>Flow_1p1ze99</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:userTask id="Activity_062hon0" name="specify acitvity">
       <bpmn:extensionElements>
-        <zeebe:formDefinition formKey="camunda-forms:/forms/activity.form" />
+        <zeebe:formDefinition formKey="64b913a59061768e84b85487" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1p1ze99</bpmn:incoming>
       <bpmn:outgoing>Flow_0exndcb</bpmn:outgoing>
@@ -40,14 +40,14 @@
     </bpmn:userTask>
     <bpmn:userTask id="Activity_0" name="verify">
       <bpmn:extensionElements>
-        <zeebe:formDefinition formKey="camunda-forms:/forms/registrationRequest.form" />
+        <zeebe:formDefinition formKey="64b91eca9061768e84b854eb" />
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0b87kno</bpmn:incoming>
       <bpmn:outgoing>Flow_1ujpu9g</bpmn:outgoing>
     </bpmn:userTask>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_4">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="process_request">
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="179" y="99" width="36" height="36" />
         <bpmndi:BPMNLabel>

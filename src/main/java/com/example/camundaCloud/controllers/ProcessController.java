@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.camundaCloud.global.Global;
 import com.example.camundaCloud.services.ProcessService;
 
+import io.camunda.operate.exception.OperateException;
 import io.camunda.zeebe.client.ZeebeClient;
 //import org.camunda.bpm.engine.RuntimeService;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
@@ -29,13 +30,14 @@ import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
 import io.camunda.zeebe.client.api.worker.JobClient;
 import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
+import io.camunda.zeebe.spring.client.properties.OperateClientConfigurationProperties;
 @RestController()
 @RequestMapping("/process")
 @CrossOrigin("*")
 public class ProcessController {
   @Autowired
-  ProcessService processService;
-
+  private ProcessService processService;
+   
   
    
    
@@ -49,6 +51,8 @@ public class ProcessController {
    @Autowired
    private ZeebeClient client;
        private final static Logger LOG = LoggerFactory.getLogger(ProcessController.class);
+   
+  // private OperateClientConfigurationProperties
 
    
   @PostMapping("/complete-task/{processInstancekey}")
@@ -67,6 +71,11 @@ public class ProcessController {
      {
        return this.processService.getTask(processInstanceKey);
      }  
+   @PostMapping("/cancel-task/{processInstancekey}")  
+   public ResponseEntity<Object> cancelProcess(@PathVariable String processInstancekey) throws NumberFormatException, OperateException
+   {
+       return this.processService.cancelProcess(processInstancekey);
+   }
 
 
 
