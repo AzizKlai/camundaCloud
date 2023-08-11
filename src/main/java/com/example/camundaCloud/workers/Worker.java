@@ -45,7 +45,7 @@ public class Worker {
      * @throws JsonProcessingException
      * @throws JsonMappingException
      */
-    @JobWorker(type = "checkuid",autoComplete = true)
+    @JobWorker (type = "checkuid",autoComplete = true)
     public HashMap<String,Object> checkUid(@Variable String uid) throws UnirestException, JsonMappingException, JsonProcessingException{ 
         //2069735100{phone_number:response.body.phone_number,activity_score:response.body.activity_score,is_valid:response.body.is_valid,carrier:response.body.carrier,country_name:response.body.country_name}
         
@@ -76,8 +76,11 @@ public class Worker {
             
         
     }
+        @JobWorker(type = "endProcess",autoComplete = true)
+        public void handleEnd(final ActivatedJob job){
+        Global.putProcessState(job.getProcessInstanceKey()+"", "COMPLETED"); 
+        }
 
-      
         @JobWorker(type = "io.camunda.zeebe:userTask",autoComplete = false)
         public void handleJob(final ActivatedJob job) throws IOException {
        
@@ -109,7 +112,8 @@ public class Worker {
         
         Map variables = job.getVariablesAsMap();
         // every time a usertask accure we save the job by the processinstancekey
-        Global.putJobs(job.getProcessInstanceKey()+"",job);   
+        Global.putJobs(job.getProcessInstanceKey()+"",job);  
+        Global.putProcessState(job.getProcessInstanceKey()+"", "ACTIVE"); 
         System.out.println("\n \n");
                
         System.out.println(job.toString()+ "job.getVariables()"+variables+" ****job handling ***"+job.getElementId());

@@ -20,9 +20,11 @@ import io.camunda.operate.auth.SimpleAuthentication;
 import io.camunda.operate.dto.ProcessInstanceState;
 import io.camunda.operate.exception.OperateException;
 import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.command.ModifyProcessInstanceCommandStep1;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.response.CompleteJobResponse;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
+import io.camunda.zeebe.client.api.response.ProcessInstanceResult;
 import io.camunda.zeebe.client.api.response.CancelProcessInstanceResponse;
 
 @Service
@@ -42,22 +44,32 @@ public class ProcessService {
 
      public String getProcessState(String processInstanceKey) throws NumberFormatException, OperateException{
         try{
-     return this.operateClient.getProcessInstance(Long.parseLong(processInstanceKey)).getState().toString();
-        }
+     //return this.operateClient.getProcessInstance(Long.parseLong(processInstanceKey)).getState().toString();
+        return Global.currentProcessState.get(processInstanceKey);
+    }
         catch(Exception e){ return "doesn't exist";}
     }
 
 
      public ResponseEntity<Object> startProcess(String bpmnPnstanceId) {
         // TODO Auto-generated method stub
-        try{
+        try{ 
             Map<String,Object> res =new HashMap<String , Object>();
         final ProcessInstanceEvent event= client.newCreateInstanceCommand()
         .bpmnProcessId(bpmnPnstanceId)
         .latestVersion()
         .send()
         .join();
+                    // trying to create a process instance with result
+       /*  final ProcessInstanceResult processInstanceResult= client.newCreateInstanceCommand()
+        .bpmnProcessId(bpmnPnstanceId)
+        .latestVersion()
+        .withResult()
+        .send()
+        .join();
+        processInstanceResult.getVariables();*/
         //client.newCompleteCommand(event.)
+        
         res.put("status","started");
         res.put("processDefinitionKey",event.getProcessDefinitionKey());
         res.put("bpmnProcessId",event.getBpmnProcessId());
@@ -88,6 +100,12 @@ public class ProcessService {
             if (jobs != null && instanceTask!=null) {
                 res.put("formId",instanceTask.getCustomHeaders().get("io.camunda.zeebe:formKey"));
                 res.put("task",instanceTask.getElementId());
+
+                //  ModifyProcessInstanceCommandStep1 modify = client.newModifyProcessInstanceCommand(Long.parseLong(processInstanceKey));
+                
+                // modify.terminateElement(instanceTask.getElementInstanceKey()).send();
+                // modify.activateElement("Activity_test1").send();
+              
                 
             } else {
                 throw new Exception("No tasks available.");
@@ -103,23 +121,39 @@ public class ProcessService {
             }  
 
 
-     public ResponseEntity<Object> completeTask(@PathVariable String processInstanceKey,
-                                            @RequestBody Map<String, Object> taskVariables)
+     public ResponseEntity<Object> completeTask( String processInstanceKey,
+                                             Map<String, Object> taskVariables)
      { try{
        Map<String,Object> res =new HashMap<String , Object>();
-
+     //  client.newWorker().jobType(processInstanceKey).
        // getting taskinstacekey
        //todo remember to handle error in case of non process existance
        HashMap<String,ActivatedJob> jobs=Global.getCurrentJobs();
+       //client.newActivateJobsCommand().jobType("processInstanceKey").maxJobsToActivate(0).fetchVariables(null).
+       // check if validity of variables
+       if(!check(taskVariables)){
+        
+        res.put("notification","verirfy you info");
+    }
+
+        else{
        if(jobs!=null) {
         // get the formkey from the job 
             ActivatedJob instanceTask=jobs.get(processInstanceKey);
             if(instanceTask!=null){
-            
-       CompleteJobResponse response = client.newCompleteCommand(instanceTask.getKey())
+        CompleteJobResponse response = client.newCompleteCommand(instanceTask.getKey())
         .variables(taskVariables).send()
                 .join();
-
+          //test modify command     
+        
+        
+         //res.put("modifycommandtest",modify.);
+        //client.
+        
+        
+        String message="don't worry";
+        res.put("real",response.toString());
+        res.put("notification",message);
         res.put("status","completed");
         res.put("processInstanceState",this.getProcessState(processInstanceKey));
 
@@ -132,6 +166,8 @@ public class ProcessService {
        }   
        else {
         throw new Exception("no jobs avaiblable");
+       }
+
        }
        
        System.out.println(res);
@@ -152,8 +188,20 @@ public class ProcessService {
        CancelProcessInstanceResponse response = client.newCancelInstanceCommand(Long.parseLong(processInstanceKey))
                                                 .send().join();
        res.put("state","canceled");
-       res.put("processInstanceState",this.getProcessState(processInstanceKey));                                         
-       return  ResponseEntity.ok(res);                                       
+       res.put("processInstanceState",this.getProcessState(processInstanceKey)); 
 
+       //UPDATA PROCESS STATE
+       Global.putProcessState(processInstanceKey, "COMPLETED"); 
+                                        
+       return  ResponseEntity.ok(res);
+       
+       
+
+    }
+
+    public boolean check( Map<String, Object> taskVariables){
+        if(taskVariables.get("test")=="false")
+        return false;
+        else return true;
     }
 }

@@ -18,11 +18,14 @@ import io.camunda.operate.search.DateFilter;
 import io.camunda.operate.search.DateFilterRange;
 import io.camunda.operate.search.ProcessInstanceFilter;
 import io.camunda.operate.search.SearchQuery;
+import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.command.ModifyProcessInstanceCommandStep1;
+import io.camunda.zeebe.client.api.response.ProcessInstanceResult;
 
 public class Test {
- 
     //private static CamundaOperateClient client;
     public static void main (String args[]) throws OperateException{
+        //zeebeClient=new ZeebeClient();
         SimpleAuthentication sa = new SimpleAuthentication("demo", "demo", "http://localhost:8081");
         CamundaOperateClient client = new CamundaOperateClient.Builder().operateUrl("http://localhost:8081").authentication(sa).build();
         
@@ -35,7 +38,8 @@ public class Test {
         SearchResult<ProcessInstance> result = client.searchProcessInstanceResults(instanceQuery);
             
         //get a process instance by its key
-        String key="2251799813758611";
+        String key="2251799813772644";
+
         ProcessInstance instance = client.getProcessInstance(Long.parseLong(key) );
         
         System.out.println(list);
