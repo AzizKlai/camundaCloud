@@ -55,14 +55,14 @@ public class ProcessController {
   // private OperateClientConfigurationProperties
 
    
-  @PostMapping("/complete-task/{processInstancekey}")
-  public ResponseEntity<Object> completeTask(@PathVariable String processInstancekey,
+  @PostMapping("/complete-task/{processInstanceKey}")
+  public ResponseEntity<Object> completeTask(@PathVariable String processInstanceKey,
                                             @RequestBody Map<String, Object> taskVariables)
-   { return this.processService.completeTask(processInstancekey, taskVariables);
+   { return this.processService.completeTask(processInstanceKey, taskVariables);
    }
-    @PostMapping("/start/{bpmnPnstanceId}")
-    public  ResponseEntity<Object> startProcess(@PathVariable String bpmnPnstanceId) {
-       return this.processService.startProcess(bpmnPnstanceId);
+    @PostMapping("/start/{bpmnProcessId}")
+    public  ResponseEntity<Object> startProcess(@PathVariable String bpmnProcessId) {
+       return this.processService.startProcess(bpmnProcessId);
       }
 
 
@@ -71,10 +71,14 @@ public class ProcessController {
      {
        return this.processService.getTask(processInstanceKey);
      }  
-   @PostMapping("/cancel-task/{processInstancekey}")  
-   public ResponseEntity<Object> cancelProcess(@PathVariable String processInstancekey) throws NumberFormatException, OperateException
+   @PostMapping("/cancel-task/{processInstanceKey}")  
+   public ResponseEntity<Object> cancelProcess(@PathVariable String processInstanceKey) throws NumberFormatException, OperateException
    {
-       return this.processService.cancelProcess(processInstancekey);
+       return this.processService.cancelProcess(processInstanceKey);
+   }
+   @GetMapping("/get-state/{processInstanceKey}")
+   public ResponseEntity<Object> getProcessStateOperate(@PathVariable String processInstanceKey){
+    return this.processService.getProcessStateOperate(processInstanceKey);
    }
 
 

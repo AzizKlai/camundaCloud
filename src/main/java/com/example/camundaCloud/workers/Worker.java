@@ -76,12 +76,23 @@ public class Worker {
             
         
     }
-        @JobWorker(type = "endProcess",autoComplete = true)
-        public void handleEnd(final ActivatedJob job){
+
+
+    
+
+        @JobWorker(type = "io.camunda.zeebe:userTask",autoComplete = false)
+        public void handleUserTask(final ActivatedJob Job) throws IOException{
+            handleJob(Job);
+        }
+
+
+         @JobWorker(type = "endProcess",autoComplete = true)
+        public void handleEnd(final ActivatedJob job) throws IOException{
+        handleJob(job);
         Global.putProcessState(job.getProcessInstanceKey()+"", "COMPLETED"); 
         }
 
-        @JobWorker(type = "io.camunda.zeebe:userTask",autoComplete = false)
+        // this handle function to handle saving jobs
         public void handleJob(final ActivatedJob job) throws IOException {
        
                 

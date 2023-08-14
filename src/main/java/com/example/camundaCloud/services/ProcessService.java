@@ -41,22 +41,35 @@ public class ProcessService {
      }
      private final static Logger LOG = LoggerFactory.getLogger(ProcessService.class);
      
+     
+     
 
+     //this func get the processstate
      public String getProcessState(String processInstanceKey) throws NumberFormatException, OperateException{
         try{
-     //return this.operateClient.getProcessInstance(Long.parseLong(processInstanceKey)).getState().toString();
         return Global.currentProcessState.get(processInstanceKey);
     }
         catch(Exception e){ return "doesn't exist";}
     }
+     // this one get the process State using operate client
+     public ResponseEntity<Object> getProcessStateOperate(String processInstanceKey){
+                 Map<String,Object> res =new HashMap<String , Object>();
+        try { 
+        res.put("processState", this.operateClient.getProcessInstance(Long.parseLong(processInstanceKey)).getState().toString());
+        return ResponseEntity.ok(res);
+    } catch (Exception e) {
+        // if the operate won't answer
+        res.put("processState","noStateAvailable");
+        return ResponseEntity.ok(res);}
+     }
 
 
-     public ResponseEntity<Object> startProcess(String bpmnPnstanceId) {
+     public ResponseEntity<Object> startProcess(String bpmnProcessId) {
         // TODO Auto-generated method stub
         try{ 
             Map<String,Object> res =new HashMap<String , Object>();
         final ProcessInstanceEvent event= client.newCreateInstanceCommand()
-        .bpmnProcessId(bpmnPnstanceId)
+        .bpmnProcessId(bpmnProcessId)
         .latestVersion()
         .send()
         .join();
@@ -89,8 +102,8 @@ public class ProcessService {
      public ResponseEntity<Object> getTask(String processInstanceKey)
      {  
         //operateClient.searchProcessInstances()
+        Map<String,Object> res =new HashMap<String , Object>();
         try{ 
-            Map<String,Object> res =new HashMap<String , Object>();
             res.put("processInstanceState",this.getProcessState(processInstanceKey));
             HashMap<String,ActivatedJob> jobs=Global.getCurrentJobs();
             // get the formkey from the job 
@@ -108,7 +121,7 @@ public class ProcessService {
               
                 
             } else {
-                throw new Exception("No tasks available.");
+              res.put("notifications","No tasks available.");
             }
                     System.out.println(res);
                     return ResponseEntity.ok(res);
@@ -123,8 +136,8 @@ public class ProcessService {
 
      public ResponseEntity<Object> completeTask( String processInstanceKey,
                                              Map<String, Object> taskVariables)
-     { try{
-       Map<String,Object> res =new HashMap<String , Object>();
+     {        Map<String,Object> res =new HashMap<String , Object>();
+        try{
      //  client.newWorker().jobType(processInstanceKey).
        // getting taskinstacekey
        //todo remember to handle error in case of non process existance
@@ -160,12 +173,12 @@ public class ProcessService {
         //res="Task completed. Workflow instance key: " + response.toString();
         
             }
-            else {
-                throw new Exception("there is no job associated to this processinstacekey");
+            else {             
+              res.put("notifications","there is no job associated to this processinstacekey");
             }
        }   
-       else {
-        throw new Exception("no jobs avaiblable");
+       else {            
+            res.put("notifications","no jobs avaiblable");
        }
 
        }
@@ -174,8 +187,8 @@ public class ProcessService {
         return ResponseEntity.ok(res); 
     }
       catch (Exception e){
-        return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body("Failed to complete task: " + e.getMessage());
-    
+        res.put("notifications","Failed to complete task: " + e.getMessage());
+        return ResponseEntity.badRequest().body(res);
       }
 
 
@@ -187,11 +200,11 @@ public class ProcessService {
        //cancel process instance by key
        CancelProcessInstanceResponse response = client.newCancelInstanceCommand(Long.parseLong(processInstanceKey))
                                                 .send().join();
+       Global.putProcessState(processInstanceKey, "CANCELED");                                          
        res.put("state","canceled");
        res.put("processInstanceState",this.getProcessState(processInstanceKey)); 
 
        //UPDATA PROCESS STATE
-       Global.putProcessState(processInstanceKey, "COMPLETED"); 
                                         
        return  ResponseEntity.ok(res);
        
