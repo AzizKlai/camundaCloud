@@ -112,7 +112,7 @@ public class ProcessService {
             // Check if the job (task) is available for processing
             if (jobs != null && instanceTask!=null) {
                 res.put("formId",instanceTask.getCustomHeaders().get("io.camunda.zeebe:formKey"));
-                res.put("task",instanceTask.getElementId());
+                res.put("taskId",instanceTask.getElementId());
 
                 //  ModifyProcessInstanceCommandStep1 modify = client.newModifyProcessInstanceCommand(Long.parseLong(processInstanceKey));
                 
@@ -121,7 +121,7 @@ public class ProcessService {
               
                 
             } else {
-              res.put("notifications","No tasks available.");
+              res.put("notification","No tasks available.");
             }
                     System.out.println(res);
                     return ResponseEntity.ok(res);
@@ -134,7 +134,7 @@ public class ProcessService {
             }  
 
 
-     public ResponseEntity<Object> completeTask( String processInstanceKey,
+     public ResponseEntity<Object> completeTask( String processInstanceKey,String taskId,
                                              Map<String, Object> taskVariables)
      {        Map<String,Object> res =new HashMap<String , Object>();
         try{
@@ -144,6 +144,7 @@ public class ProcessService {
        HashMap<String,ActivatedJob> jobs=Global.getCurrentJobs();
        //client.newActivateJobsCommand().jobType("processInstanceKey").maxJobsToActivate(0).fetchVariables(null).
        // check if validity of variables
+    
        if(!check(taskVariables)){
         
         res.put("notification","verirfy you info");
@@ -154,6 +155,8 @@ public class ProcessService {
         // get the formkey from the job 
             ActivatedJob instanceTask=jobs.get(processInstanceKey);
             if(instanceTask!=null){
+                System.out.println("from srevice"+instanceTask.getElementId()+" "+taskId+" "+(taskId.equals(instanceTask.getElementId())));
+            if(taskId.equals(instanceTask.getElementId())){    
         CompleteJobResponse response = client.newCompleteCommand(instanceTask.getKey())
         .variables(taskVariables).send()
                 .join();
@@ -173,12 +176,16 @@ public class ProcessService {
         //res="Task completed. Workflow instance key: " + response.toString();
         
             }
+            else{
+                res.put("notification","trying to complete a different task, wait until the state is updated");
+            }
+            }
             else {             
-              res.put("notifications","there is no job associated to this processinstacekey");
+              res.put("notification","there is no job associated to this processinstacekey");
             }
        }   
        else {            
-            res.put("notifications","no jobs avaiblable");
+            res.put("notification","no jobs avaiblable");
        }
 
        }
@@ -187,7 +194,7 @@ public class ProcessService {
         return ResponseEntity.ok(res); 
     }
       catch (Exception e){
-        res.put("notifications","Failed to complete task: " + e.getMessage());
+        res.put("notification","Failed to complete task: " + e.getMessage());
         return ResponseEntity.badRequest().body(res);
       }
 

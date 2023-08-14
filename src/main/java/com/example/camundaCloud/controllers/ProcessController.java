@@ -58,7 +58,11 @@ public class ProcessController {
   @PostMapping("/complete-task/{processInstanceKey}")
   public ResponseEntity<Object> completeTask(@PathVariable String processInstanceKey,
                                             @RequestBody Map<String, Object> taskVariables)
-   { return this.processService.completeTask(processInstanceKey, taskVariables);
+   {  String taskName=(String)taskVariables.get("taskName"); 
+      Map<String, Object> data= (Map<String, Object>) taskVariables.get("data");
+      //taskVariables.remove("taskId");
+      System.out.println("from controller"+taskName);
+    return this.processService.completeTask(processInstanceKey,taskName, data);
    }
     @PostMapping("/start/{bpmnProcessId}")
     public  ResponseEntity<Object> startProcess(@PathVariable String bpmnProcessId) {
