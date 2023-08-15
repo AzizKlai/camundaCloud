@@ -21,6 +21,7 @@ import io.camunda.operate.dto.ProcessInstanceState;
 import io.camunda.operate.exception.OperateException;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.command.ModifyProcessInstanceCommandStep1;
+import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.response.CompleteJobResponse;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
@@ -104,6 +105,7 @@ public class ProcessService {
         //operateClient.searchProcessInstances()
         Map<String,Object> res =new HashMap<String , Object>();
         try{ 
+            
             res.put("processInstanceState",this.getProcessState(processInstanceKey));
             HashMap<String,ActivatedJob> jobs=Global.getCurrentJobs();
             // get the formkey from the job 
@@ -113,7 +115,7 @@ public class ProcessService {
             if (jobs != null && instanceTask!=null) {
                 res.put("formId",instanceTask.getCustomHeaders().get("io.camunda.zeebe:formKey"));
                 res.put("taskId",instanceTask.getElementId());
-
+                
                 //  ModifyProcessInstanceCommandStep1 modify = client.newModifyProcessInstanceCommand(Long.parseLong(processInstanceKey));
                 
                 // modify.terminateElement(instanceTask.getElementInstanceKey()).send();
@@ -147,7 +149,7 @@ public class ProcessService {
     
        if(!check(taskVariables)){
         
-        res.put("notification","verirfy you info");
+        res.put("notification","verirfy your info");
     }
 
         else{
@@ -167,8 +169,8 @@ public class ProcessService {
         //client.
         
         
-        String message="don't worry";
-        res.put("real",response.toString());
+        String message=" ";//don't worry";
+        res.put("real",response);
         res.put("notification",message);
         res.put("status","completed");
         res.put("processInstanceState",this.getProcessState(processInstanceKey));

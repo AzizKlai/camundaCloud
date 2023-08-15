@@ -23,6 +23,7 @@ import com.example.camundaCloud.services.ProcessService;
 
 import io.camunda.operate.exception.OperateException;
 import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
 //import org.camunda.bpm.engine.RuntimeService;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.response.CompleteJobResponse;
@@ -36,6 +37,8 @@ import io.camunda.zeebe.spring.client.properties.OperateClientConfigurationPrope
 @CrossOrigin("*")
 public class ProcessController {
   @Autowired
+  private ZeebeClient client;
+  @Autowired
   private ProcessService processService;
    
   
@@ -43,17 +46,21 @@ public class ProcessController {
    
    @GetMapping("")
    public String onBord(){
+  //  client.newTopologyRequest().send();
+    /*client.newActivateJobsCommand()
+    .jobType("io.camunda.zeebe:userTask")
+    .maxJobsToActivate(10)
+    .send();*///ActivateJobsResponse activatedjobs = client.newActivateJobsCommand().jobType("endProcess").maxJobsToActivate(-1).send().join();
+           //     System.out.println(activatedjobs);
     //client.newActivateJobsCommand().jobType("Test");
     return "success";
    }
 
    
-   @Autowired
-   private ZeebeClient client;
        private final static Logger LOG = LoggerFactory.getLogger(ProcessController.class);
    
   // private OperateClientConfigurationProperties
-
+  
    
   @PostMapping("/complete-task/{processInstanceKey}/{taskName}")
   public ResponseEntity<Object> completeTask(@PathVariable String processInstanceKey,@PathVariable String taskName,
