@@ -36,30 +36,19 @@ import io.camunda.zeebe.spring.client.properties.OperateClientConfigurationPrope
 @RequestMapping("/process")
 @CrossOrigin("*")
 public class ProcessController {
-  @Autowired
-  private ZeebeClient client;
+  
   @Autowired
   private ProcessService processService;
-   
-  
-   
+  private final static Logger LOG = LoggerFactory.getLogger(ProcessController.class);
+
    
    @GetMapping("")
    public String onBord(){
-  //  client.newTopologyRequest().send();
-    /*client.newActivateJobsCommand()
-    .jobType("io.camunda.zeebe:userTask")
-    .maxJobsToActivate(10)
-    .send();*///ActivateJobsResponse activatedjobs = client.newActivateJobsCommand().jobType("endProcess").maxJobsToActivate(-1).send().join();
-           //     System.out.println(activatedjobs);
-    //client.newActivateJobsCommand().jobType("Test");
     return "success";
    }
 
    
-       private final static Logger LOG = LoggerFactory.getLogger(ProcessController.class);
    
-  // private OperateClientConfigurationProperties
   
    
   @PostMapping("/complete-task/{processInstanceKey}/{taskName}")
