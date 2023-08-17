@@ -9,39 +9,33 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import com.example.camundaCloud.controllers.ProcessController;
 import com.example.camundaCloud.global.Global;
 
 import io.camunda.operate.CamundaOperateClient;
 import io.camunda.operate.auth.SimpleAuthentication;
-import io.camunda.operate.dto.ProcessInstanceState;
 import io.camunda.operate.exception.OperateException;
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.command.ModifyProcessInstanceCommandStep1;
-import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.response.CompleteJobResponse;
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
-import io.camunda.zeebe.client.api.response.ProcessInstanceResult;
-import io.camunda.zeebe.client.api.response.CancelProcessInstanceResponse;
 
 @Service
 public class ProcessService {
     
      @Autowired
      private ZeebeClient client;
-     
      private CamundaOperateClient operateClient;
+
+
+     private final static Logger LOG = LoggerFactory.getLogger(ProcessService.class);
+
+     
      public ProcessService() throws OperateException{
         SimpleAuthentication sa = new SimpleAuthentication("demo", "demo", "http://localhost:8081");
         this.operateClient= new CamundaOperateClient.Builder().operateUrl("http://localhost:8081").authentication(sa).build();
         
      }
-     private final static Logger LOG = LoggerFactory.getLogger(ProcessService.class);
-     
      
      
 
@@ -129,7 +123,7 @@ public class ProcessService {
                 }
             }  
 
-
+     //complete the current task of an activated process
      public ResponseEntity<Object> completeTask( String processInstanceKey,String taskId,
                                              Map<String, Object> taskVariables)
      {        Map<String,Object> res =new HashMap<String , Object>();

@@ -1,10 +1,7 @@
 package com.example.camundaCloud.controllers;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.hc.core5.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,23 +12,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.camundaCloud.global.Global;
 import com.example.camundaCloud.services.ProcessService;
 
 import io.camunda.operate.exception.OperateException;
-import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
-//import org.camunda.bpm.engine.RuntimeService;
-import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.client.api.response.CompleteJobResponse;
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent;
-import io.camunda.zeebe.client.api.worker.JobClient;
-import io.camunda.zeebe.spring.client.annotation.JobWorker;
-import io.camunda.zeebe.spring.client.annotation.ZeebeWorker;
-import io.camunda.zeebe.spring.client.properties.OperateClientConfigurationProperties;
+
 @RestController()
 @RequestMapping("/process")
 @CrossOrigin("*")
@@ -47,8 +33,6 @@ public class ProcessController {
     return "success";
    }
 
-   
-   
   
    
   @PostMapping("/complete-task/{processInstanceKey}/{taskName}")
