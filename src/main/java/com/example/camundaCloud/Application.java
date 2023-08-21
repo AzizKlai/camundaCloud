@@ -7,9 +7,10 @@ import io.camunda.zeebe.spring.client.annotation.Deployment;
 
 
 @SpringBootApplication
-@Deployment(resources = {"classpath:test.bpmn","classpath:processV3.bpmn","classpath:processV1.bpmn","classpath:processV2.bpmn" , "classpath:process4.bpmn", "classpath:service.bpmn"})
+@Deployment(resources = {
+    "classpath:test.bpmn","classpath:processV3.bpmn","classpath:processV1.bpmn",
+    "classpath:processV2.bpmn" , "classpath:process4.bpmn", "classpath:service.bpmn"})
 public class Application  {
-    
     public static void main(String... args){
      SpringApplication.run(Application.class, args);
     }

@@ -22,16 +22,18 @@ import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import io.camunda.zeebe.spring.client.annotation.Variable;
 
 @Component
+// a public class made to contain all workers methods 
 public class Worker {
-       
-    @JobWorker(type = "verify-id", autoComplete = true)
+    // jobworker with type verify-id associated to service tasks with that tasktype made to     
+    @JobWorker(type = "verify-id", autoComplete = true) 
     public void verfier(){
+        // logic
         System.out.println("**** verification on ****");
     }
     /**
-     * @param uid
+     * @param uid this uid is retrived from the processInstance variables with name uid
      * @return
-     * @throws UnirestException
+     * @throws UnirestException 
      * @throws JsonProcessingException
      * @throws JsonMappingException
      */
@@ -65,13 +67,22 @@ public class Worker {
 
 
     
-
+        /**
+         * 
+         * @param Job retrive automatically the activated job information
+         * @throws IOException
+         */
         @JobWorker(type = "io.camunda.zeebe:userTask",autoComplete = false)
         public void handleUserTask(final ActivatedJob Job) throws IOException{
             handleJob(Job);
         }
 
-
+         /**
+          * this job worker is make to endprocess tasks that should came in the end of
+          the process with tasktype endProcess is important to tell that the processInstance is completed
+          * @param job
+          * @throws IOException
+          */
          @JobWorker(type = "endProcess",autoComplete = true)
         public void handleEnd(final ActivatedJob job) throws IOException{
         handleJob(job);
@@ -79,6 +90,11 @@ public class Worker {
         }
 
         // this handle function to handle saving jobs
+        /**
+         * made to save informations of every launched job wich contains key variables and processInstanceKey
+         * @param job
+         * @throws IOException
+         */
         public void handleJob(final ActivatedJob job) throws IOException {
         Map variables = job.getVariablesAsMap();
         // every time a usertask accure we save the job by the processinstancekey

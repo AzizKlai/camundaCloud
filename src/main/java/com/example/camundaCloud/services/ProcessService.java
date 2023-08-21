@@ -40,6 +40,13 @@ public class ProcessService {
      
 
      //Get the processState
+     /**
+      * 
+      * @param processInstanceKey
+      * @return
+      * @throws NumberFormatException
+      * @throws OperateException
+      */
      public String getProcessState(String processInstanceKey) throws NumberFormatException, OperateException{
         try{
         return Global.currentProcessState.get(processInstanceKey);
@@ -48,6 +55,11 @@ public class ProcessService {
     }
 
      //Get processState using the Operate client
+     /**
+      * 
+      * @param processInstanceKey
+      * @return
+      */
      public ResponseEntity<Object> getProcessStateOperate(String processInstanceKey){
                  Map<String,Object> res =new HashMap<String , Object>();
         try { 
@@ -59,7 +71,12 @@ public class ProcessService {
         return ResponseEntity.ok(res);}
      }
 
-     //send startCommand to Zeebe engine
+     //send startCommand to Zeebe engine 
+     /**
+      * 
+      * @param bpmnProcessId
+      * @return
+      */
      public ResponseEntity<Object> startProcess(String bpmnProcessId) {
         try{ 
             Map<String,Object> res =new HashMap<String , Object>();
@@ -93,7 +110,12 @@ public class ProcessService {
      
       }
 
-     //get the current task of processInstance 
+     //get the current task of processInstance
+     /**
+      * 
+      * @param processInstanceKey
+      * @return
+      */ 
      public ResponseEntity<Object> getTask(String processInstanceKey)
      {  
         Map<String,Object> res =new HashMap<String , Object>();
@@ -124,6 +146,13 @@ public class ProcessService {
             }  
 
      //complete the current task of an activated process
+     /**
+      * 
+      * @param processInstanceKey
+      * @param taskId
+      * @param taskVariables
+      * @return
+      */
      public ResponseEntity<Object> completeTask( String processInstanceKey,String taskId,
                                              Map<String, Object> taskVariables)
      {        Map<String,Object> res =new HashMap<String , Object>();
@@ -183,6 +212,13 @@ public class ProcessService {
    }
 
    //cancel a running process
+   /**
+    * 
+    * @param processInstanceKey
+    * @return
+    * @throws NumberFormatException
+    * @throws OperateException
+    */
    public ResponseEntity<Object> cancelProcess(String processInstanceKey) throws NumberFormatException, OperateException {
         Map<String,Object> res =new HashMap<String , Object>();
        
@@ -203,7 +239,12 @@ public class ProcessService {
        }
     }
 
-    //custom function to chech the validity of data
+    //custom function to chech the validity of data 
+    /**
+     * 
+     * @param taskVariables variable to check their validity if it is necessary
+     * @return
+     */
     public boolean check( Map<String, Object> taskVariables){
         if(taskVariables.get("test")=="false")
         return false;
