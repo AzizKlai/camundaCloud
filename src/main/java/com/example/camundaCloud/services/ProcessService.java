@@ -136,7 +136,6 @@ public class ProcessService {
             } else {
               res.put("notification","No tasks available.");
             }
-                    System.out.println(res);
                     return ResponseEntity.ok(res);
 
                 }
@@ -174,7 +173,6 @@ public class ProcessService {
         // get the formkey from the job 
             ActivatedJob instanceTask=jobs.get(processInstanceKey);
             if(instanceTask!=null){
-                System.out.println("from srevice"+instanceTask.getElementId()+" "+taskId+" "+(taskId.equals(instanceTask.getElementId())));
             if(taskId.equals(instanceTask.getElementId())){    
             //completing the task
             CompleteJobResponse response = client.newCompleteCommand(instanceTask.getKey())
@@ -201,7 +199,6 @@ public class ProcessService {
 
        }
        
-       System.out.println(res);
         return ResponseEntity.ok(res); 
     }
       catch (Exception e){
