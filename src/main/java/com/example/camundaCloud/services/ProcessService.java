@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.example.camundaCloud.global.Global;
+import com.example.camundaCloud.workers.Worker;
 
 import io.camunda.operate.CamundaOperateClient;
 import io.camunda.operate.auth.SimpleAuthentication;
@@ -32,6 +32,7 @@ public class ProcessService {
 
      
      public ProcessService() throws OperateException{
+        //only if needed we connect to operate if operate is not running delete this
         SimpleAuthentication sa = new SimpleAuthentication("demo", "demo", "http://localhost:8081");
         this.operateClient= new CamundaOperateClient.Builder().operateUrl("http://localhost:8081").authentication(sa).build();
         
@@ -49,7 +50,7 @@ public class ProcessService {
       */
      public String getProcessState(String processInstanceKey) throws NumberFormatException, OperateException{
         try{
-        return Global.currentProcessState.get(processInstanceKey);
+        return Worker.currentProcessState.get(processInstanceKey);
     }
         catch(Exception e){ return "doesn't exist";}
     }
@@ -122,7 +123,7 @@ public class ProcessService {
         try{ 
             
             res.put("processInstanceState",this.getProcessState(processInstanceKey));
-            HashMap<String,ActivatedJob> jobs=Global.getCurrentJobs();
+            HashMap<String,ActivatedJob> jobs=Worker.getCurrentJobs();
             
             // Check if the job (task) is available for processing
             if (jobs != null && jobs.get(processInstanceKey)!=null) {
@@ -159,7 +160,7 @@ public class ProcessService {
         try{
        //getting taskinstacekey
        //todo remember to handle error in case of non process existance
-       HashMap<String,ActivatedJob> jobs=Global.getCurrentJobs();
+       HashMap<String,ActivatedJob> jobs=Worker.getCurrentJobs();
        //client.newActivateJobsCommand().jobType("processInstanceKey").maxJobsToActivate(0).fetchVariables(null).
        // check if validity of variables
        
@@ -226,7 +227,7 @@ public class ProcessService {
         .send()
         .join();
        //UPDATE PROCESS STATE
-       Global.putProcessState(processInstanceKey, "CANCELED");                                          
+       Worker.putProcessState(processInstanceKey, "CANCELED");                                          
        res.put("state","canceled");
        res.put("processInstanceState",this.getProcessState(processInstanceKey)); 
        
@@ -246,8 +247,7 @@ public class ProcessService {
      * @return
      */
     public boolean check( Map<String, Object> taskVariables){
-        if(taskVariables.get("test")=="false")
-        return false;
-        else return true;
+
+     return true;
     }
 }

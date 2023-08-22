@@ -7,7 +7,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.example.camundaCloud.global.Global;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,12 +23,47 @@ import io.camunda.zeebe.spring.client.annotation.Variable;
 @Component
 // a public class made to contain all workers methods 
 public class Worker {
-    // jobworker with type verify-id associated to service tasks with that tasktype made to     
+
+
+    //store job data
+    public static HashMap<String,ActivatedJob> currentJobs=new HashMap<>(); 
+    public static HashMap<String,ActivatedJob> getCurrentJobs(){
+        return currentJobs;
+    }
+    /**
+     * save currentjob by processInstanceKey
+     * @param key processInstanceKey
+     * @param job
+     */
+    public static void putJobs(String key,ActivatedJob job){
+        currentJobs.put(key, job);
+    }
+    //store processstate
+    public static HashMap<String,String> currentProcessState=new HashMap<>(); 
+    public static HashMap<String,String> getCurrentProcessState(){
+        return currentProcessState;
+    }
+    /**
+     * 
+     * @param key  processInstanceKey
+     * @param state
+     */
+    public static void putProcessState(String key,String state){
+        currentProcessState.put(key, state);
+    }
+
+
+
+
+
+    // JobWorders:
+
+    // jobworker with type verify-id associated to service tasks with that tasktype made to
     @JobWorker(type = "verify-id", autoComplete = true) 
     public void verfier(){
-        // logic
         System.out.println("**** verification on ****");
     }
+
     /**
      * @param uid this uid is retrived from the processInstance variables with name uid
      * @return
@@ -39,27 +73,10 @@ public class Worker {
      */
     @JobWorker (type = "checkuid",autoComplete = true)
     public HashMap<String,Object> checkUid(@Variable String uid) throws UnirestException, JsonMappingException, JsonProcessingException{ 
-        //2069735100{phone_number:response.body.phone_number,activity_score:response.body.activity_score,is_valid:response.body.is_valid,carrier:response.body.carrier,country_name:response.body.country_name}
-        
-       
-       //this is a get call to the rapid api endpoint (for testing) that return is_valid true if the uid(is a valid phone number) with related variables else returns is_valid false
-       HttpResponse<JsonNode> response = Unirest.get("https://phone-intelligence-api.p.rapidapi.com/3.0/phone_intel?phone="+uid+"0&country_hint=US")
-	   .header("X-RapidAPI-Key", "949a0f63d7msha8a20a4b3cfb715p17f6f6jsn19400031ff56")
-	   .header("X-RapidAPI-Host", "phone-intelligence-api.p.rapidapi.com")
-	   .asJson(); 
-    
-        // Create an instance of ObjectMapper from Jackson library
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        // Parse the JSON string into a HashMap
-        //String uid=task.getAttributeValue("uid");
-        System.out.println(response.getBody().toString());
         HashMap<String,Object> variable=new HashMap<String,Object>();
-        
-            // Parse the JSON string into a HashMap
-             variable = objectMapper.readValue(response.getBody().toString(), HashMap.class);
-            variable.put("personid", "55160");
-            variable.put("step","0");
+        variable.put("personid", "55160");
+        variable.put("step","0");
+        variable.put("is_valid",true);
             //when we return map the worker saves these variables to with the current task that triggred this jobWorker
             return variable; 
         
@@ -86,7 +103,7 @@ public class Worker {
          @JobWorker(type = "endProcess",autoComplete = true)
         public void handleEnd(final ActivatedJob job) throws IOException{
         handleJob(job);
-        Global.putProcessState(job.getProcessInstanceKey()+"", "COMPLETED"); 
+        Worker.putProcessState(job.getProcessInstanceKey()+"", "COMPLETED"); 
         }
 
         // this handle function to handle saving jobs
@@ -96,12 +113,12 @@ public class Worker {
          * @throws IOException
          */
         public void handleJob(final ActivatedJob job) throws IOException {
-        Map variables = job.getVariablesAsMap();
+        //Map variables = job.getVariablesAsMap();
         // every time a usertask accure we save the job by the processinstancekey
-        Global.putJobs(job.getProcessInstanceKey()+"",job);  
-        Global.putProcessState(job.getProcessInstanceKey()+"", "ACTIVE"); 
-        System.out.println("\n \n");    
-        System.out.println(job.toString()+ "job.getVariables()"+variables+" ****job handling ***"+job.getElementId());
+        Worker.putJobs(job.getProcessInstanceKey()+"",job);  
+        Worker.putProcessState(job.getProcessInstanceKey()+"", "ACTIVE"); 
+        //System.out.println("\n \n");    
+        //System.out.println(job.toString()+" ****job handling ***"+job.getElementId());
         
 
         // business logic
