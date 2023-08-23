@@ -80,14 +80,16 @@ public class ProcessController {
    {
        return this.processService.cancelProcess(processInstanceKey);
    }
+
+
    /**
     * 
     * @param processInstanceKey
     * @return
     */
    @GetMapping("/{processInstanceKey}/get-state")
-   public ResponseEntity<Object> getProcessStateOperate(@PathVariable String processInstanceKey){
-    return this.processService.getProcessStateOperate(processInstanceKey);
+   public ResponseEntity<Object> getProcessState(@PathVariable String processInstanceKey){
+    return this.processService.getProcessState(processInstanceKey);
    }
 
 

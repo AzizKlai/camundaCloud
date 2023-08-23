@@ -131,9 +131,9 @@
       <bpmn:incoming>Flow_11dau2l</bpmn:incoming>
       <bpmn:outgoing>Flow_1l4frrx</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:sequenceFlow id="Flow_1l4frrx" sourceRef="Activity_1juc1yw" targetRef="Event_0ae7h44" />
+    <bpmn:sequenceFlow id="Flow_1l4frrx" sourceRef="Activity_1juc1yw" targetRef="complete_process" />
     <bpmn:endEvent id="Event_0ae7h44" name="end process">
-      <bpmn:incoming>Flow_1l4frrx</bpmn:incoming>
+      <bpmn:incoming>Flow_1d0sacc</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:userTask id="Activity_143rtf5" name="create registration request">
       <bpmn:extensionElements>
@@ -148,6 +148,14 @@
       <bpmn:outgoing>Flow_1sdo5ko</bpmn:outgoing>
     </bpmn:exclusiveGateway>
     <bpmn:sequenceFlow id="Flow_1sdo5ko" sourceRef="Gateway_0080c5e" targetRef="Activity_0" />
+    <bpmn:sequenceFlow id="Flow_1d0sacc" sourceRef="complete_process" targetRef="Event_0ae7h44" />
+    <bpmn:serviceTask id="complete_process" name="endProcess">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="endProcess" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1l4frrx</bpmn:incoming>
+      <bpmn:outgoing>Flow_1d0sacc</bpmn:outgoing>
+    </bpmn:serviceTask>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="immatriculation">
@@ -170,9 +178,9 @@
         <dc:Bounds x="920" y="80" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0ae7h44_di" bpmnElement="Event_0ae7h44">
-        <dc:Bounds x="1082" y="102" width="36" height="36" />
+        <dc:Bounds x="1242" y="102" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="1070" y="145" width="61" height="14" />
+          <dc:Bounds x="1230" y="145" width="61" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_18r7tkv_di" bpmnElement="Activity_143rtf5">
@@ -180,6 +188,9 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0080c5e_di" bpmnElement="Gateway_0080c5e" isMarkerVisible="true">
         <dc:Bounds x="245" y="95" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0vfuszi_di" bpmnElement="complete_process">
+        <dc:Bounds x="1080" y="80" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_11ioz7h_di" bpmnElement="Flow_11ioz7h">
         <di:waypoint x="208" y="120" />
@@ -215,11 +226,15 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1l4frrx_di" bpmnElement="Flow_1l4frrx">
         <di:waypoint x="1020" y="120" />
-        <di:waypoint x="1082" y="120" />
+        <di:waypoint x="1080" y="120" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1sdo5ko_di" bpmnElement="Flow_1sdo5ko">
         <di:waypoint x="295" y="120" />
         <di:waypoint x="360" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1d0sacc_di" bpmnElement="Flow_1d0sacc">
+        <di:waypoint x="1180" y="120" />
+        <di:waypoint x="1242" y="120" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

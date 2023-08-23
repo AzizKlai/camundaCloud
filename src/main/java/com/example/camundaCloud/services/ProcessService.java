@@ -25,7 +25,7 @@ public class ProcessService {
     
      @Autowired
      private ZeebeClient client;
-     private CamundaOperateClient operateClient;
+     //this client is optional private CamundaOperateClient operateClient;
 
 
      private final static Logger LOG = LoggerFactory.getLogger(ProcessService.class);
@@ -33,8 +33,8 @@ public class ProcessService {
      
      public ProcessService() throws OperateException{
         //only if needed we connect to operate if operate is not running delete this
-        SimpleAuthentication sa = new SimpleAuthentication("demo", "demo", "http://localhost:8081");
-        this.operateClient= new CamundaOperateClient.Builder().operateUrl("http://localhost:8081").authentication(sa).build();
+      //  SimpleAuthentication sa = new SimpleAuthentication("demo", "demo", "http://localhost:8081");
+       // this.operateClient= new CamundaOperateClient.Builder().operateUrl("http://localhost:8081").authentication(sa).build();
         
      }
      
@@ -48,29 +48,48 @@ public class ProcessService {
       * @throws NumberFormatException
       * @throws OperateException
       */
-     public String getProcessState(String processInstanceKey) throws NumberFormatException, OperateException{
+     public String getProcessStateByKey(String processInstanceKey) throws NumberFormatException, OperateException{
         try{
+            if(Worker.currentProcessState.get(processInstanceKey)!=null)
         return Worker.currentProcessState.get(processInstanceKey);
+        else return "NOTFOUND";
     }
-        catch(Exception e){ return "doesn't exist";}
+        catch(Exception e){ return "NOTFOUND";}
     }
-
-     //Get processState using the Operate client
+      //Get processState 
      /**
       * 
       * @param processInstanceKey
       * @return
       */
-     public ResponseEntity<Object> getProcessStateOperate(String processInstanceKey){
+     public ResponseEntity<Object> getProcessState(String processInstanceKey){
+                 Map<String,Object> res =new HashMap<String , Object>();
+        try { 
+            
+        res.put("processState",this.getProcessStateByKey(processInstanceKey));
+        return ResponseEntity.ok(res);
+    } catch (Exception e) {
+        // if the operate won't answer
+        res.put("processState","NOTFOUND");
+        return ResponseEntity.ok(res);}
+     }
+
+     //Get processState using the Operate client it also optional try getProcessState
+     /**
+      * 
+      * @param processInstanceKey
+      * @return
+      */
+    /* public ResponseEntity<Object> getProcessStateOperate(String processInstanceKey){
                  Map<String,Object> res =new HashMap<String , Object>();
         try { 
         res.put("processState", this.operateClient.getProcessInstance(Long.parseLong(processInstanceKey)).getState().toString());
         return ResponseEntity.ok(res);
     } catch (Exception e) {
         // if the operate won't answer
-        res.put("processState","noStateAvailable");
+        res.put("processState","NOTFOUNDAvailable");
         return ResponseEntity.ok(res);}
-     }
+     }*/
 
      //send startCommand to Zeebe engine 
      /**
@@ -122,7 +141,8 @@ public class ProcessService {
         Map<String,Object> res =new HashMap<String , Object>();
         try{ 
             
-            res.put("processInstanceState",this.getProcessState(processInstanceKey));
+            String state=this.getProcessStateByKey(processInstanceKey);
+            res.put("processInstanceState",state);
             HashMap<String,ActivatedJob> jobs=Worker.getCurrentJobs();
             
             // Check if the job (task) is available for processing
@@ -134,7 +154,7 @@ public class ProcessService {
                  
                 
             } else {
-              res.put("notification","No tasks available.");
+              res.put("notification","No tasks available, processInstance is "+state);
             }
                     return ResponseEntity.ok(res);
 
@@ -157,7 +177,11 @@ public class ProcessService {
                                              Map<String, Object> taskVariables)
      {        Map<String,Object> res =new HashMap<String , Object>();
         try{
-       //getting taskinstacekey
+        //getting the state first
+        String state=this.getProcessStateByKey(processInstanceKey);
+        if(state.equals("ACTIVE")){
+
+       //getting taskinstancekey
        //todo remember to handle error in case of non process existance
        HashMap<String,ActivatedJob> jobs=Worker.getCurrentJobs();
        //client.newActivateJobsCommand().jobType("processInstanceKey").maxJobsToActivate(0).fetchVariables(null).
@@ -181,8 +205,8 @@ public class ProcessService {
                 
         
         res.put("status","completed");
-        res.put("processInstanceState",this.getProcessState(processInstanceKey));
-
+        res.put("processInstanceState",this.getProcessStateByKey(processInstanceKey));
+        
         
             }
             else{
@@ -199,7 +223,10 @@ public class ProcessService {
 
        }
        
-        return ResponseEntity.ok(res); 
+      }
+      else{res.put("notification","this processInstance is "+state);}
+      
+      return ResponseEntity.ok(res); 
     }
       catch (Exception e){
         res.put("notification","Failed to complete task: " + e.getMessage());
@@ -226,7 +253,7 @@ public class ProcessService {
        //UPDATE PROCESS STATE
        Worker.putProcessState(processInstanceKey, "CANCELED");                                          
        res.put("state","canceled");
-       res.put("processInstanceState",this.getProcessState(processInstanceKey)); 
+       res.put("processInstanceState",this.getProcessStateByKey(processInstanceKey)); 
        
                                         
        return  ResponseEntity.ok(res);
